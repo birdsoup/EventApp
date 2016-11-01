@@ -1,0 +1,11 @@
+flask
+itsdangerous
+jinja2
+requests
+sqlalchemy-migrate
+flask-login
+flask-cors
+flask-sqlalchemy
+flask-wtf
+flask-bcrypt
+

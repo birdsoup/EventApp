@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if title %}
+    <title>{{ title }} - EventApp</title>
+    {% else %}
+    <title>EventApp</title>
+    {% endif %}
+</head>
+
+<body>
+<header class="site-header">
+
+
+<hr/>
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

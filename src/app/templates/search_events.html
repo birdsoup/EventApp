@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for event in events %}
+<hr>
+{{ event['name']['text'] }} 
+<br><br>
+{{ event['description']['text']}}
+<br><br>
+{{ event['start']['local']}} - {{ event['end']['local']}}
+<br><br>
+{{ event['url']}}
+<br><br>
+<img src="{{ event['logo']['url'] }}"/>
+
+<br><br><br>
+
+{# For debugging (to print out all contents of the responses#}
+{# {% for item in event.items() %}
+{{ item }}
+<br>
+
+{% endfor %} #}
+
+{% endfor %}
+
+
+{% endblock %}
