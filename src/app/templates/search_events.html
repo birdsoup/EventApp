@@ -2,15 +2,20 @@
 {% block content %}
 
 {% for event in events %}
+
 <hr>
 {{ event['name']['text'] }} 
 <br><br>
+
 {{ event['description']['text']}}
 <br><br>
+
 {{ event['start']['local']}} - {{ event['end']['local']}}
 <br><br>
+
 {{ event['url']}}
 <br><br>
+
 <img src="{{ event['logo']['url'] }}"/>
 
 <br><br><br>
