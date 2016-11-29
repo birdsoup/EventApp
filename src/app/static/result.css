@@ -1,0 +1,29 @@
+header{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  color: #FFA500;
+  font-family: sans-serif;
+  font-size: 50px;
+  font-style: bold;
+}
+
+
+.bookmark{
+  color: #FFA500;
+}
+
+.caption{
+  margin-left: 3%;
+  width: 42%;
+  float: left;
+}
+
+.eventpic{
+  max-height: 200px;
+}
+
+.buy{
+  border: none;
+  background-color: #FFA500;
+}

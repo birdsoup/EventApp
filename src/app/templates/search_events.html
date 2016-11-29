@@ -1,33 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
+<link rel="stylesheet" href="/static/result.css">
+
+
+<header>Events Around you...</header>
 
 {% for event in events %}
+      <section id="caption{{loop.index}}" class="caption">
+      {% if event['logo']['url'] is not defined %}
+        <img src="/static/img.jpg" alt="default event picture" class="eventpic">
+     {% else %}
+         <img src="{{event['logo']['url'] }}" alt="eventpic{{loop.index}}"/>
+    {% endif %}
 
-<hr>
-{{ event['name']['text'] }} 
-<br><br>
 
-{{ event['description']['text']}}
-<br><br>
+        <h3>{{ event['name']['text'] }}</h3>
+        <p>Date:{{ event['start']['local']}} - {{ event['end']['local']}}</p>
+        <P>Location:{{event['location']}}</p>
+        <p>{{ event['description']['text']}}</p>
+        <p><a href="{{ event['url']}}" class="btn btn-primary buy"  role="button">Buy Ticket Now</a> 
 
-{{ event['start']['local']}} - {{ event['end']['local']}}
-<br><br>
+        <a href="/bookmark/{{event['id']}}" class="btn btn-default bookmark" role="button">Bookmark</a></p>
+      </section>
 
-{{ event['url']}}
-<br><br>
-
-<img src="{{ event['logo']['url'] }}"/>
-
-<br><br><br>
-
-{# For debugging (to print out all contents of the responses#}
-{# {% for item in event.items() %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+For debugging (to print out all contents of the responses
+{% for item in event.items() %}
 {{ item }}
 <br>
+{% endfor %} 
 
-{% endfor %} #}
+{% else %}
+    <p> No events found, try revising your search terms or preferences</p>
 
 {% endfor %}
+
 
 
 {% endblock %}

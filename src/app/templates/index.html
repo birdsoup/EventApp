@@ -1,16 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
+    <script src="/static/script.js"></script>
+    <div class="col-lg-6" id="mid">
+        <h1 id="title">LocFun</h1>
+        <form action="/search_events" method="post" name="search">
+            {{ search_form.hidden_tag() }}
+            <div class="input-group" id="block1">
+              <input type="text" id="search_terms" name="search_terms" placeholder = "Search For Events" class="form-control" aria-label="...">
+              <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Range &nbsp;
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="#" onclick="changeContent('2km')">2km</a></li>
+                  <li><a href="#" onclick="changeContent('5km')">5km</a></li>
+                  <li><a href="#" onclick="changeContent('~10km')">10km</a></li>
+                  <li><a href="#" onclick="changeContent('~20km')">20km</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="#" onclick="changeContent('All&nbsp;')">Don't Care</a></li>
+                </ul>
+              </div><!-- /btn-group -->
+            </div><!-- /input-group -->
 
-<form action="/search_events" method="post" name="register">
-    <div class="form-group">
-        {{ search_form.hidden_tag() }}
-        <label for="search_events">Search for Events:</label>
-        <input id="search_terms" name="search_terms" type="text" class="form-control"/>
-        <br>
-        <input type="submit" class="btn btn-default" value="Sign Up"/>
-    </div>
-</form>
 
+            <div class="btn-group" role="group" aria-label="..." id="block2">
+              <button type="button" class="btn btn-default">Concert</button>
+              <button type="button" class="btn btn-default">Party</button>
+              <button type="button" class="btn btn-default">Bar</button>
+              <button type="button" class="btn btn-default">Festival</button>
+              <button type="button" class="btn btn-default">Sports</button>
+            </div>
 
+            <br>
+            <input type="submit" id="submitbtn" class="btn btn-success"  aria-haspopup="true" aria-expanded="false" value="Search">
+
+            <br>
+            <input type="hidden" name="location" value="Boston, MA.">
+            <p id="location"><i class="fa fa-map-marker" aria-hidden="true"></i>&nbsp;Boston, MA. </p>
+        </form>
+    </div><!-- /.col-lg-6 -->
 
 {% endblock %}
