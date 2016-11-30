@@ -12,7 +12,7 @@ def validate_credentials(user, password):
     except:
         return False
 
-    validate(passwordhash, password)
+    return validate(passwordhash, password)
 
 
 class User(db.Model):
