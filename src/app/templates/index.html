@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-    <script src="/static/script.js"></script>
     <div class="col-lg-6" id="mid">
         <h1 id="title">LocFun</h1>
         <form action="/search_events" method="post" name="search">
@@ -12,32 +11,34 @@
                   Range &nbsp;
                   <span class="caret"></span>
                 </button>
+                <input type="hidden" id="distance" name="distance" value="">
                 <ul class="dropdown-menu dropdown-menu-right">
                   <li><a href="#" onclick="changeContent('2km')">2km</a></li>
                   <li><a href="#" onclick="changeContent('5km')">5km</a></li>
-                  <li><a href="#" onclick="changeContent('~10km')">10km</a></li>
-                  <li><a href="#" onclick="changeContent('~20km')">20km</a></li>
+                  <li><a href="#" onclick="changeContent('10km')">10km</a></li>
+                  <li><a href="#" onclick="changeContent('20km')">20km</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="#" onclick="changeContent('All&nbsp;')">Don't Care</a></li>
                 </ul>
               </div><!-- /btn-group -->
             </div><!-- /input-group -->
 
+            <input type="hidden" id="category" name="category" value="">
 
             <div class="btn-group" role="group" aria-label="..." id="block2">
-              <button type="button" class="btn btn-default">Concert</button>
-              <button type="button" class="btn btn-default">Party</button>
-              <button type="button" class="btn btn-default">Bar</button>
-              <button type="button" class="btn btn-default">Festival</button>
-              <button type="button" class="btn btn-default">Sports</button>
+              <button type="button" id="Concert" onclick="changeCategory('Concert')" class="btn btn-default">Concert</button>
+              <button type="button" id="Party" onclick="changeCategory('Party')" class="btn btn-default">Party</button>
+              <button type="button" id="Bar" onclick="changeCategory('Bar')" class="btn btn-default">Bar</button>
+              <button type="button" id="Festival" onclick="changeCategory('Festival')" class="btn btn-default">Festival</button>
+              <button type="button" id="Sports" onclick="changeCategory('Sports')" class="btn btn-default">Sports</button>
             </div>
 
             <br>
             <input type="submit" id="submitbtn" class="btn btn-success"  aria-haspopup="true" aria-expanded="false" value="Search">
 
             <br>
-            <input type="hidden" name="location" value="Boston, MA.">
-            <p id="location"><i class="fa fa-map-marker" aria-hidden="true"></i>&nbsp;Boston, MA. </p>
+            <input type="hidden" id="location_field" name="location" value="{{location}}">
+            <p id="location"><i class="fa fa-map-marker" aria-hidden="true"></i> <span id="location_display">{{location}} </span></p>
         </form>
     </div><!-- /.col-lg-6 -->
 

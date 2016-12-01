@@ -2,8 +2,7 @@
 {% block content %}
 <link rel="stylesheet" href="/static/result.css">
 
-
-<header>Events Around you...</header>
+<header>Your Bookmarked Events:</header>
 
 {% for event in events %}
       <section id="caption{{loop.index}}" class="caption">
@@ -16,26 +15,25 @@
 
         <h3>{{ event['name']['text'] }}</h3>
         <p>Date: {{ event['start']['local']}} - {{ event['end']['local']}}</p>
-        <P>Location: {{event['venue']['address']['localized_address_display']}}</p>
-        <p>{{ event['description']['text']}}</p>
+
+        {# venue doesn't work for some reason, the eventbrite batch api wont expand the venue #}
+        {# <P>Location: {{event['venue']['address']['localized_address_display']}}</p> #}
+        {% if event['description']['text'] is not none %}
+          <p>{{ event['description']['text']}}</p>
+        {% else %}
+          <p>No description.</p>
+        {% endif %}
+
         <p><a href="{{ event['url']}}" class="btn btn-primary buy"  role="button">Buy Ticket Now</a> 
 
-        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">Bookmark</a></p>
+        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">Remove Bookmark</a></p>
       </section>
 
-{#
-For debugging (to print out all contents of the responses
-{% for item in event.items() %}
-{{ item }}
-<br>
-{% endfor %} 
-#}
 
 {% else %}
-    <p> No events found, try revising your search terms or preferences</p>
+    <p> No bookmarks found, try searching for events on the main page.</p>
 
 {% endfor %}
-
 
 
 {% endblock %}
