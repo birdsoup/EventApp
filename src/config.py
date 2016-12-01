@@ -5,6 +5,8 @@ PORT = 5000
 DEBUG = True
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
+EVENTBRITE_TOKEN = 'W4B3Z3RYXUKWIUCB2RER'
+
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'db/app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db/db_repository')

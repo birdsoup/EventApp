@@ -5,11 +5,11 @@ from database import db, validate_credentials, User, BookmarkCounter, UserBookma
 
 from forms import SearchForm, LoginForm, SignupForm
 from hasher import hash_password
+from config import EVENTBRITE_TOKEN
 
 import requests
 import json
 
-TOKEN = 'W4B3Z3RYXUKWIUCB2RER'
 
 blueprint = Blueprint("views", "views")
 
@@ -35,7 +35,6 @@ def index():
 @blueprint.route('/search_events', methods=['POST'])
 def search_events():
     #add api call here
-    #need to also handle distance selector
     form = SearchForm(request.form)
     if not form.validate():
         flash_errors(form)
@@ -56,7 +55,7 @@ def search_events():
     response = requests.get(
                         "https://www.eventbriteapi.com/v3/events/search/",
                         headers = {
-                            "Authorization": "Bearer " + TOKEN,
+                            "Authorization": "Bearer " + EVENTBRITE_TOKEN,
                         },
                         verify = True,
                         params=parameters)
@@ -236,7 +235,7 @@ def bookmarks():
     response = requests.post(
                         "https://www.eventbriteapi.com/v3/batch/",
                         headers = {
-                            "Authorization": "Bearer " + TOKEN,
+                            "Authorization": "Bearer " + EVENTBRITE_TOKEN,
                         },
                         verify = True,
                         params=parameters)
