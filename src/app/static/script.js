@@ -26,9 +26,9 @@ function changeCategory(category) {
     old_selection = document.getElementById(old_category)
     if (old_selection && old_selection.className.indexOf(" active") != -1)
         old_selection.className = old_selection.className.replace(" active", "");
-    if (old_selection.id && old_selection.id != category)
+    if (old_selection && old_selection.id && old_selection.id != category)
         document.getElementById(category).className += " active";
-    if (old_selection.id && old_selection.id == category)
+    if (oldselection && old_selection.id && old_selection.id == category)
         category_input.value = ""
 
 
