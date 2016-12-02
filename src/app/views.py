@@ -19,13 +19,17 @@ blueprint = Blueprint("views", "views")
 @blueprint.route('/index')
 def index():
     ip = request.environ['REMOTE_ADDR']
-    response = requests.get(
-                        "http://ip-api.com/json/" + ip,
-                        )
+    try:
+        response = requests.get("http://ip-api.com/json/" + ip, timeout=5)
+    except requests.exceptions.Timeout:
+        address = "Error while finding location"
+        return render_template("index.html", title='Home', search_form=SearchForm(), location=address)
+
     location = json.loads(response.text)
     if location['status'] == 'success':
         address= location['city'] + ', ' + location['region']
     else:
+        print response.text
         address = "Location not found"
     return render_template("index.html", title='Home', search_form=SearchForm(), location=address)
 
@@ -51,13 +55,16 @@ def search_events():
         search_terms += " " + form.category.data
 
     parameters = {'q':search_terms, 'location.address': form.location.data, 'location.within': distance, 'expand':'venue' }
-    response = requests.get(
-                        "https://www.eventbriteapi.com/v3/events/search/",
-                        headers = {
-                            "Authorization": "Bearer " + EVENTBRITE_TOKEN,
-                        },
-                        verify = True,
-                        params=parameters)
+    try:
+        response = requests.get(
+                            "https://www.eventbriteapi.com/v3/events/search/",
+                            headers = {"Authorization": "Bearer " + EVENTBRITE_TOKEN},
+                            verify = True,
+                            params=parameters, 
+                            timeout=5)
+    except requests.exceptions.Timeout:
+        flash("Error while contacting events API")
+        return redirect(url_for('.index'))
 
     result = json.loads(response.text)
     #print result
@@ -231,13 +238,18 @@ def bookmarks():
     params = json.dumps(params)
 
     parameters = {'batch':params, 'expand':'venue'}
-    response = requests.post(
-                        "https://www.eventbriteapi.com/v3/batch/",
-                        headers = {
-                            "Authorization": "Bearer " + EVENTBRITE_TOKEN,
-                        },
-                        verify = True,
-                        params=parameters)
+    try:
+        response = requests.post(
+                            "https://www.eventbriteapi.com/v3/batch/",
+                            headers = {"Authorization": "Bearer " + EVENTBRITE_TOKEN},
+                            verify = True,
+                            params=parameters,
+                            timeout=5)
+    except requests.exceptions.Timeout:
+        flash("Error while contacting event API")
+        return render_template("bookmarks.html", title="Your Bookmarks", events=[], source=EVENTBRITE)
+
+        return redirect(url_for('.index'))
     event_dict = json.loads(response.text)
     events = []
     for event in event_dict:
