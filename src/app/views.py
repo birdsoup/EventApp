@@ -20,8 +20,7 @@ blueprint = Blueprint("views", "views")
 def index():
     ip = request.environ['REMOTE_ADDR']
     response = requests.get(
-                        "http://ip-api.com/json",
-                        params={'IP':ip}
+                        "http://ip-api.com/json/" + ip,
                         )
     location = json.loads(response.text)
     if location['status'] == 'success':
