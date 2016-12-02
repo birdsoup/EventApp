@@ -21,7 +21,7 @@ def index():
     ip = request.environ['REMOTE_ADDR']
     response = requests.get(
                         "http://ip-api.com/json",
-                        params={'ip':ip}
+                        params={'IP':ip}
                         )
     location = json.loads(response.text)
     if location['status'] == 'success':
