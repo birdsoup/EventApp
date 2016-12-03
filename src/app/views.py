@@ -231,6 +231,7 @@ def bookmark(bookmark_id, source):
                     counter.first().count -= 1
 
 
+        return redirect(request.args.get('next') or url_for('.index'))
 
 
 
@@ -239,8 +240,7 @@ def bookmark(bookmark_id, source):
     if "view_event" in request.referrer:
         return redirect(request.referrer)
 
-    return redirect(request.args.get('next') or url_for('.index'))
-
+    return redirect(url_for('.index'))
 
 
 @login_required
