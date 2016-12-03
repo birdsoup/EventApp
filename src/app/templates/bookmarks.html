@@ -16,17 +16,17 @@
         <h3>{{ event['name']['text'] }}</h3>
         <p>Date: {{ event['start']['local']}} - {{ event['end']['local']}}</p>
 
-        {# venue doesn't work for some reason, the eventbrite batch api wont expand the venue #}
-        {# <P>Location: {{event['venue']['address']['localized_address_display']}}</p> #}
+        <P>Location: {{event['venue']['address']['localized_address_display']}}</p>
         {% if event['description']['text'] is not none %}
           <p>{{ event['description']['text']}}</p>
         {% else %}
-          <p>No description.</p>
+          <p>No Description</p>
         {% endif %}
 
         <p><a href="{{ event['url']}}" class="btn btn-primary buy"  role="button">Buy Ticket Now</a> 
 
-        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if not is_bookmarked(event['id'], source) %} Remove {% endif %} Bookmark</a></p>
+        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if not is_bookmarked(event['id']) %} Remove {% endif %} Bookmark</a>
+        <a href="/view_event/{{event['id']}}" class="btn btn-default view_event" role="button">More Info</a></p>
       </section>
 
 

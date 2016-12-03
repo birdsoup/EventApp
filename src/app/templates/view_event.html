@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/result.css">
+
+
+<header>Event Info</header>
+
+<section id="caption" class="caption">
+  {% if 'logo' not in event or 'url' in event['logo'] or event['logo']['url'] is not defined %}
+    <img src="/static/img.jpg" alt="default event picture" class="eventpic">
+  {% else %}
+    <img src="{{event['logo']['url'] }}" alt="eventpic"/>
+  {% endif %}
+
+
+  <h3>{{ event['name']['text'] }}</h3>
+  <p>Date: {{ event['start']['local']}} - {{ event['end']['local']}}</p>
+  <P>Location: {{event['venue']['address']['localized_address_display']}}</p>
+  {% if event['ticket_classes'][0]['free'] == True %}
+    <p>Cost: Free</p>
+  {% elif event['ticket_classes'][0]['donation'] %}
+    <p>Cost: Donation</p>
+  {% elif 'cost' in event['ticket_classes'][0] %}
+    <p>Cost: {{event['ticket_classes'][0]['cost']['display']}}</p>
+  {% elif 'fee' in event['ticket_classes'][0] %}
+    <p>Cost: {{event['ticket_classes'][0]['fee']}}</p>
+  {% else %}
+    <p>Cost: Something went wrong</p>
+  {% endif %}
+
+  <h4> Weather Info:</h4>
+  <p> {{weather}} </p>
+
+  <p> Description:</p>
+  {% if event['description']['text'] is not none %}
+    <p>{{ event['description']['text']}}</p>
+  {% else %}
+    <p>No Description</p>
+  {% endif %}
+
+  <p><a href="{{ event['url']}}" class="btn btn-primary buy"  role="button">Buy Ticket Now</a> 
+
+  <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if is_bookmarked(event['id']) %} Remove {% endif %} Bookmark</a></p>
+</section>
+
+
+
+{% endblock %}

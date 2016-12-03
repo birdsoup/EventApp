@@ -22,12 +22,13 @@
         {% if event['description']['text'] is not none %}
           <p>{{ event['description']['text']}}</p>
         {% else %}
-          <p>No description.</p>
+          <p>No Description</p>
         {% endif %}
 
         <p><a href="{{ event['url']}}" class="btn btn-primary buy"  role="button">Buy Ticket Now</a> 
 
-        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if not is_bookmarked(event['id'], source) %} Remove {% endif %} Bookmark</a></p>
+        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if is_bookmarked(event['id']) %} Remove {% endif %} Bookmark</a>
+        <a href="/view_event/{{event['id']}}" class="btn btn-default view_event" role="button">More Info</a></p>
       </section>
 
 

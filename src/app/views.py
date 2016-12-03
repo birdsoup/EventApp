@@ -9,6 +9,8 @@ from config import EVENTBRITE_TOKEN
 
 import requests
 import json
+from datetime import datetime, timedelta
+import calendar
 
 
 blueprint = Blueprint("views", "views")
@@ -240,6 +242,9 @@ def bookmark(bookmark_id, source):
 
         db.session.commit()
 
+    if "view_event" in request.referrer:
+        return redirect(request.referrer)
+
     return redirect(request.args.get('next') or url_for('.index'))
 
 
@@ -273,6 +278,60 @@ def popular_events():
     return render_template("popular_events.html", title="Popular Events", events=events, counters=popularEvents, source=EVENTBRITE)
 
 
+@blueprint.route("/view_event/<event_id>", methods=['GET'])
+def view_event(event_id):
+    try:
+        response = requests.get(
+                            "https://www.eventbriteapi.com/v3/events/" + str(event_id) + "?expand=venue,ticket_classes",
+                            headers = {"Authorization": "Bearer " + EVENTBRITE_TOKEN},
+                            verify = True,
+                            timeout=5)
+
+    except requests.exceptions.Timeout:
+        flash("Error while contacting events API")
+        return redirect(url_for('.index'))
+
+    result = json.loads(response.text)
+
+    if 'description' not in result:
+        flash("Error - There was an issue getting the event info")
+        return redirect(url_for('.index'))
+
+    #default values
+    weather_img = None
+    weather_str = "Weather info could not be found."
+
+    start_date = result['start']['local'][:10] # xxxx-xx-xx date representation
+    start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    if start_date < datetime.now() + timedelta(days=4):
+
+        try:
+            time = calendar.timegm(start_date.utctimetuple())
+            DARKSKY_KEY = 'da09fc59cbac70c0350780fe1cda2b91'
+            response = requests.get(
+                                "https://api.darksky.net/forecast/%s/%s,%s,%s" % (DARKSKY_KEY, result['venue']['latitude'], result['venue']['longitude'], str(time)),
+                                verify = True,
+                                timeout=5)
+
+            weather_dict = json.loads(response.text)['daily']['data'][0]
+            temperatureMin = weather_dict['temperatureMin']
+            temperatureMax = weather_dict['temperatureMax'] 
+            humidity = weather_dict['humidity']
+            summary = weather_dict['summary']
+            #days_weather = json.dumps(weather_dict, indent=4, sort_keys=True) 
+            weather_str = "%i - %i degrees, %s%% humidity, %s" % (temperatureMin, temperatureMax, str(humidity)[2:], summary)
+            print weather_str
+
+        except requests.exceptions.Timeout:
+            return redirect(url_for('.index'))
+    else:
+        weather_str = "Event date is too far away for a weather forecast."
+
+    return render_template('view_event.html', title="Event Info", event=result, source=EVENTBRITE, weather=weather_str)
+
+
+
+
 #this function was copied from StackOverflow
 def flash_errors(form):
     for field, errors in form.errors.items():
@@ -282,11 +341,11 @@ def flash_errors(form):
 def batch_event_request(event_ids):
     params = []
     for event_id in event_ids:
-        params.append({"method": "GET", "relative_url": "/events/" + str(event_id), "body":"expand=venue"})
+        params.append({"method": "GET", "relative_url": "/events/" + str(event_id) + "?expand=venue"})
 
     params = json.dumps(params)
 
-    parameters = {'batch':params, 'expand':'venue'}
+    parameters = {'batch':params}
     try:
         response = requests.post(
                             "https://www.eventbriteapi.com/v3/batch/",
@@ -305,6 +364,13 @@ def batch_event_request(event_ids):
 
 @blueprint.context_processor
 def processor():
-    def is_bookmarked(bookmark_id, source):
-        return UserBookmark.query.filter_by(bookmark_id=bookmark_id, source=source, user=g.user).scalar() is not None
+    def is_bookmarked(bookmark_id):
+        if g.user is not None and g.user.is_authenticated:
+            try:
+                if UserBookmark.query.filter_by(bookmark_id=bookmark_id, user=g.user).scalar() is not None:
+                    return True
+            except:
+                return False
+
+        return False
     return dict(is_bookmarked=is_bookmarked)
