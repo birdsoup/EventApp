@@ -29,8 +29,11 @@ def index():
     if location['status'] == 'success':
         address= location['city'] + ', ' + location['region']
     else:
-        print response.text
         address = "Location not found"
+
+        #DEBUGGING REMOVE ON REAL SERVER
+        address = "Boston, MA"
+
     return render_template("index.html", title='Home', search_form=SearchForm(), location=address)
 
 
@@ -67,9 +70,12 @@ def search_events():
         return redirect(url_for('.index'))
 
     result = json.loads(response.text)
-    #print result
+
     if 'status_code' in result and result['status_code'] == 400:
-        flash('Error - Something was wrong with your search')
+        if result['error_description'] == "There are errors with your arguments: location.address - INVALID":
+            flash('Error - Invalid location')
+        else:
+            flash('Error - Something was wrong with your search')
         return redirect(url_for('.index'))
     if 'events' in result:
         events = result['events']
@@ -196,15 +202,8 @@ def about():
 def bookmark(bookmark_id, source):
     '''Bookmarks the event with the given id from the given source (Eventbrite, stubhub or yelp)'''
     if g.user is not None and g.user.is_authenticated:
-        counter = BookmarkCounter.query.filter_by(bookmark_id=bookmark_id, source=source)
-        if counter.scalar() is None:
-            counter = BookmarkCounter(bookmark_id=bookmark_id, source=source, count=0)
-            db.session.add(counter)
-            #should probably move this to the frontend, do the call to it from javascript instead of 
-            #changing pages
-            #return redirect(url_for('.index'))
-        else:
-            counter.first().count += 1
+        #used to determine whether to incremend or decrement bookmark count
+        adding_bookmark = True
 
         user_bookmark = UserBookmark.query.filter_by(bookmark_id=bookmark_id, source=source, user=g.user)
         #if not bookmarked, add it, else delete it
@@ -213,13 +212,35 @@ def bookmark(bookmark_id, source):
             db.session.add(user_bookmark)
             flash("Bookmark added.")
         else:
+            adding_bookmark = False
             db.session.delete(user_bookmark.first())
             flash("Bookmark removed.")
 
 
+        counter = BookmarkCounter.query.filter_by(bookmark_id=bookmark_id, source=source)
+        if counter.scalar() is None:
+            counter = BookmarkCounter(bookmark_id=bookmark_id, source=source, count=1)
+            db.session.add(counter)
+            #should probably move this to the frontend, do the call to it from javascript instead of 
+            #changing pages
+            #return redirect(url_for('.index'))
+        else:
+            if adding_bookmark:
+                counter.first().count += 1
+            else:
+                count = counter.first().count
+                if count == 1:
+                    db.session.delete(counter.first())
+                else:
+                    counter.first().count -= 1
+
+
+
+
+
         db.session.commit()
 
-    return redirect(request.args.get('next') or url_for('.index'), code=307)
+    return redirect(request.args.get('next') or url_for('.index'))
 
 
 
@@ -231,9 +252,37 @@ def bookmarks():
         return render_template("bookmarks.html", title="Your Bookmarks", bookmarks=[])
 
     user_bookmarks = user_bookmarks.all()
+    bookmark_ids = [bookmark.bookmark_id for bookmark in user_bookmarks]
+
+    events = batch_event_request(bookmark_ids)
+    if events == -1:
+        flash("Error while contacting event API")
+        return render_template("bookmarks.html", title="Your Bookmarks", events=[], source=EVENTBRITE)
+
+    return render_template("bookmarks.html", title="Your Bookmarks", events=events, source=EVENTBRITE)
+
+@blueprint.route("/help", methods=['GET'])
+def help():
+    return render_template("help.html", title="Help")
+
+@blueprint.route("/popular_events", methods=['GET'])
+def popular_events():
+    popularEvents = BookmarkCounter.query.order_by(BookmarkCounter.count.desc()).all()[:10]
+    events = batch_event_request([event.bookmark_id for event in popularEvents])
+
+    return render_template("popular_events.html", title="Popular Events", events=events, counters=popularEvents, source=EVENTBRITE)
+
+
+#this function was copied from StackOverflow
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"%s Error: %s" % (getattr(form, field).label.text, error))
+
+def batch_event_request(event_ids):
     params = []
-    for bookmark in user_bookmarks:
-        params.append({"method": "GET", "relative_url": "/events/" + str(bookmark.bookmark_id), "body":"expand=venue"})
+    for event_id in event_ids:
+        params.append({"method": "GET", "relative_url": "/events/" + str(event_id), "body":"expand=venue"})
 
     params = json.dumps(params)
 
@@ -246,28 +295,16 @@ def bookmarks():
                             params=parameters,
                             timeout=5)
     except requests.exceptions.Timeout:
-        flash("Error while contacting event API")
-        return render_template("bookmarks.html", title="Your Bookmarks", events=[], source=EVENTBRITE)
+        return -1
 
-        return redirect(url_for('.index'))
     event_dict = json.loads(response.text)
     events = []
     for event in event_dict:
         events.append(json.loads(event['body']))
+    return events
 
-    return render_template("bookmarks.html", title="Your Bookmarks", events=events, source=EVENTBRITE)
-
-@blueprint.route("/help", methods=['GET'])
-def help():
-    render_template("help.html", title="Help")
-
-
-#this function was copied from StackOverflow
-def flash_errors(form):
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(u"%s Error: %s" % (getattr(form, field).label.text, error))
-
-
-
-#def is_bookmarked(bookmark_id, source):
+@blueprint.context_processor
+def processor():
+    def is_bookmarked(bookmark_id, source):
+        return UserBookmark.query.filter_by(bookmark_id=bookmark_id, source=source, user=g.user).scalar() is not None
+    return dict(is_bookmarked=is_bookmarked)

@@ -20,7 +20,7 @@
         <p>{{ event['description']['text']}}</p>
         <p><a href="{{ event['url']}}" class="btn btn-primary buy"  role="button">Buy Ticket Now</a> 
 
-        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">Bookmark</a></p>
+        <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if not is_bookmarked(event['id'], source) %} Remove {% endif %} Bookmark</a></p>
       </section>
 
 {#

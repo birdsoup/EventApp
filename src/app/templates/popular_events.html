@@ -2,7 +2,7 @@
 {% block content %}
 <link rel="stylesheet" href="/static/result.css">
 
-<header>Your Bookmarked Events:</header>
+<header>Popular Events:</header>
 
 {% for event in events %}
       <section id="caption{{loop.index}}" class="caption">
@@ -10,10 +10,11 @@
         <img src="/static/img.jpg" alt="default event picture" class="eventpic">
      {% else %}
          <img src="{{event['logo']['url'] }}" alt="eventpic{{loop.index}}"/>
-    {% endif %}
+      {% endif %}
 
 
         <h3>{{ event['name']['text'] }}</h3>
+        <h4>{{ counters[loop.index0].count}} Bookmark(s) </h4>
         <p>Date: {{ event['start']['local']}} - {{ event['end']['local']}}</p>
 
         {# venue doesn't work for some reason, the eventbrite batch api wont expand the venue #}
@@ -31,7 +32,7 @@
 
 
 {% else %}
-    <p> No bookmarks found, try searching for events on the main page.</p>
+    <p> No popular events found in your area.</p>
 
 {% endfor %}
 
