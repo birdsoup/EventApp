@@ -231,16 +231,17 @@ def bookmark(bookmark_id, source):
                     counter.first().count -= 1
 
 
+        if "view_event" in request.referrer:
+            return redirect(request.referrer)
+
         return redirect(request.args.get('next') or url_for('.index'))
 
 
 
         db.session.commit()
 
-    if "view_event" in request.referrer:
-        return redirect(request.referrer)
 
-    return redirect(url_for('.index'))
+    return redirect(url_for('.login'))
 
 
 @login_required
