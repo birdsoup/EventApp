@@ -157,7 +157,7 @@ def login():
         else:
             flash_errors(form)
 
-    return redirect(url_for('.login'))
+    return redirect(request.referrer or url_for('.login'))
 
 
 
