@@ -85,6 +85,7 @@ def search_events():
         flash('Error - Something went wrong.')
         return redirect(url_for('.index'))
 
+    #truncate the description if it's too long
     for event in events:
         description = event['description']['text']
         if description is not None and len(description) > 1000:
@@ -188,13 +189,6 @@ def how():
 @blueprint.route("/features", methods=['GET'])
 def features():
     return render_template("features.html", title="Features")
-
-
-
-@blueprint.route("/about", methods=['GET'])
-def about():
-    return render_template("about.html", title="About")
-
 
 
 #this is vulnerable to csrf, might want to switch to using forms
@@ -303,7 +297,7 @@ def view_event(event_id):
 
     start_date = result['start']['local'][:10] # xxxx-xx-xx date representation
     start_date = datetime.strptime(start_date, "%Y-%m-%d")
-    if start_date < datetime.now() + timedelta(days=4):
+    if True: #start_date < datetime.now() + timedelta(days=4):
 
         try:
             time = calendar.timegm(start_date.utctimetuple())
@@ -327,18 +321,29 @@ def view_event(event_id):
     else:
         weather_str = "Event date is too far away for a weather forecast."
 
-    return render_template('view_event.html', title="Event Info", event=result, source=EVENTBRITE, weather=weather_str)
 
 
 
 
-#this function was copied from StackOverflow
+    return render_template('view_event.html', title="Event Info", event=result, source=EVENTBRITE, weather=weather_str, location=result['venue']['address']['localized_address_display'])
+
+
+
+
+#this function was copied from http://flask.pocoo.org/snippets/12/
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
-            flash(u"%s Error: %s" % (getattr(form, field).label.text, error))
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))
+
 
 def batch_event_request(event_ids):
+    '''
+
+    '''
     params = []
     for event_id in event_ids:
         params.append({"method": "GET", "relative_url": "/events/" + str(event_id) + "?expand=venue"})
@@ -360,8 +365,11 @@ def batch_event_request(event_ids):
     events = []
     for event in event_dict:
         events.append(json.loads(event['body']))
+
     return events
 
+
+#For use in the jinja templates, to determine how to label the bookmark buttons
 @blueprint.context_processor
 def processor():
     def is_bookmarked(bookmark_id):

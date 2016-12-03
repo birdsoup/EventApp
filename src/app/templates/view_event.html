@@ -2,10 +2,11 @@
 {% block content %}
 <link rel="stylesheet" href="/static/result.css">
 
-
+<div class="col-lg-6">
 <header>Event Info</header>
 
-<section id="caption" class="caption">
+
+<section id="caption1" class="caption">
   {% if 'logo' not in event or 'url' in event['logo'] or event['logo']['url'] is not defined %}
     <img src="/static/img.jpg" alt="default event picture" class="eventpic">
   {% else %}
@@ -15,7 +16,7 @@
 
   <h3>{{ event['name']['text'] }}</h3>
   <p>Date: {{ event['start']['local']}} - {{ event['end']['local']}}</p>
-  <P>Location: {{event['venue']['address']['localized_address_display']}}</p>
+  <p>Location: {{event['venue']['address']['localized_address_display']}}</p>
   {% if event['ticket_classes'][0]['free'] == True %}
     <p>Cost: Free</p>
   {% elif event['ticket_classes'][0]['donation'] %}
@@ -28,7 +29,7 @@
     <p>Cost: Something went wrong</p>
   {% endif %}
 
-  <h4> Weather Info:</h4>
+  <p> Weather Info:</p>
   <p> {{weather}} </p>
 
   <p> Description:</p>
@@ -42,7 +43,18 @@
 
   <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if is_bookmarked(event['id']) %} Remove {% endif %} Bookmark</a></p>
 </section>
+</div>
 
+<div class="col-lg-6">
 
+<header>Directions</header>
+
+<iframe
+  width="600"
+  height="450"
+  frameborder="0" style="border:0"
+  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDNjkBtpLZmGG0Eh4SZ9psqQ8RwdJPx8jo&q={{location}}" allowfullscreen>
+</iframe>
+</div>
 
 {% endblock %}

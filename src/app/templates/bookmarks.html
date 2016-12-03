@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <link rel="stylesheet" href="/static/result.css">
+<script src="/static/result.js"></script>
 
 <header>Your Bookmarked Events:</header>
 
 {% for event in events %}
+  <div class="col-sm-6">
+
       <section id="caption{{loop.index}}" class="caption">
       {% if event['logo']['url'] is not defined %}
         <img src="/static/img.jpg" alt="default event picture" class="eventpic">
@@ -16,7 +19,7 @@
         <h3>{{ event['name']['text'] }}</h3>
         <p>Date: {{ event['start']['local']}} - {{ event['end']['local']}}</p>
 
-        <P>Location: {{event['venue']['address']['localized_address_display']}}</p>
+        <p>Location: {{event['venue']['address']['localized_address_display']}}</p>
         {% if event['description']['text'] is not none %}
           <p>{{ event['description']['text']}}</p>
         {% else %}
@@ -28,6 +31,7 @@
         <a href="/bookmark/{{event['id']}}/{{source}}" class="btn btn-default bookmark" role="button">{% if not is_bookmarked(event['id']) %} Remove {% endif %} Bookmark</a>
         <a href="/view_event/{{event['id']}}" class="btn btn-default view_event" role="button">More Info</a></p>
       </section>
+      </div>
 
 
 {% else %}
