@@ -23,6 +23,11 @@
   width: 50%;
   left:25%;
 }
+#map{
+  width: 100%;
+  text-align: center;
+  
+}
 
 #dropdownMenu1{
   height:50px;

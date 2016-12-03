@@ -42,7 +42,28 @@
         </form>
     </div><!-- /.col-lg-6 -->
     <div class="col-lg-6"></div>
+    <div class="col-lg-6" id="map">
+      <div id="mapholder" style="margin-top:20px;">
+      </div>
 
+      <script>
+      var x = document.getElementById("mapholder");
+      getLocation();
+      function getLocation() {
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(showPosition);
+          } else {
+              x.innerHTML = "Geolocation is not supported by this browser.";
+          }
+      }
+
+      function showPosition(position) {
+          var latlon = position.coords.latitude + "," + position.coords.longitude;
+          var img_url = "https://maps.googleapis.com/maps/api/staticmap?center="+latlon+"&zoom=14&size=570x220&sensor=false";
+          document.getElementById("mapholder").innerHTML = "<img src='"+img_url+"'>";
+      }
+      </script>
+    </div>
 
 
 
