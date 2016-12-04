@@ -33,9 +33,6 @@ def index():
     else:
         address = "Location not found"
 
-        #DEBUGGING REMOVE ON REAL SERVER
-        address = "Boston, MA"
-
     return render_template("index.html", title='Home', search_form=SearchForm(), location=address)
 
 
@@ -83,6 +80,8 @@ def search_events():
         events = result['events']
     else:
         flash('Error - Something went wrong.')
+        #log error
+        print "Error searching ", form.search_terms.data, form.category.data, form.location.data, form.distance.data
         return redirect(url_for('.index'))
 
     #truncate the description if it's too long
