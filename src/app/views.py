@@ -314,8 +314,9 @@ def view_event(event_id):
             humidity = weather_dict['humidity']
             summary = weather_dict['summary']
             #days_weather = json.dumps(weather_dict, indent=4, sort_keys=True) 
+
             weather_str = "%i - %i degrees, %s%% humidity, %s" % (temperatureMin, temperatureMax, str(humidity)[2:], summary)
-            print weather_str
+            print weather_dict
 
         except requests.exceptions.Timeout:
             return redirect(url_for('.index'))
