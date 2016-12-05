@@ -49,11 +49,31 @@
 
 <header>Directions</header>
 
-<iframe
+<script>
+  var x = document.getElementById("directions");
+  getLocation();
+  function getLocation() {
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+      } else {
+          
+          x.innerHTML = "Geolocation is not supported by this browser.";
+      }
+  }
+
+  function showPosition(position) {
+    var latlon = position.coords.latitude + "," + position.coords.longitude;
+    var src_url = "https://www.google.com/maps/embed/v1/directions?key=AIzaSyDNjkBtpLZmGG0Eh4SZ9psqQ8RwdJPx8jo&destination={{location}}&origin=" + latlon;
+    document.getElementById("directions").src = src_url;
+}
+</script>
+
+<iframe id="directions"
   width="600"
   height="450"
   frameborder="0" style="border:0"
-  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDNjkBtpLZmGG0Eh4SZ9psqQ8RwdJPx8jo&q={{location}}" allowfullscreen>
+  allowfullscreen>
+
 </iframe>
 </div>
 

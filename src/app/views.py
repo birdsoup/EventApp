@@ -5,12 +5,13 @@ from database import db, validate_credentials, User, BookmarkCounter, UserBookma
 
 from forms import SearchForm, LoginForm, SignupForm
 from hasher import hash_password
-from config import EVENTBRITE_TOKEN
+from config import EVENTBRITE_TOKEN, DARKSKY_KEY
 
 import requests
 import json
 from datetime import datetime, timedelta
 import calendar
+import urllib
 
 
 blueprint = Blueprint("views", "views")
@@ -31,6 +32,7 @@ def index():
     if location['status'] == 'success':
         address= location['city'] + ', ' + location['region']
     else:
+        print "Couldn't find location:", location
         address = "Location not found"
 
     return render_template("index.html", title='Home', search_form=SearchForm(), location=address)
@@ -301,7 +303,6 @@ def view_event(event_id):
 
         try:
             time = calendar.timegm(start_date.utctimetuple())
-            DARKSKY_KEY = 'da09fc59cbac70c0350780fe1cda2b91'
             response = requests.get(
                                 "https://api.darksky.net/forecast/%s/%s,%s,%s" % (DARKSKY_KEY, result['venue']['latitude'], result['venue']['longitude'], str(time)),
                                 verify = True,
@@ -326,7 +327,7 @@ def view_event(event_id):
 
 
 
-    return render_template('view_event.html', title="Event Info", event=result, source=EVENTBRITE, weather=weather_str, location=result['venue']['address']['localized_address_display'])
+    return render_template('view_event.html', title="Event Info", event=result, source=EVENTBRITE, weather=weather_str, location=urllib.quote(result['venue']['address']['localized_address_display'], safe=''))
 
 
 
